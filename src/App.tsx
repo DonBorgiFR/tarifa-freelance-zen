@@ -214,79 +214,86 @@ export default function App() {
                   </div>
               </div>
             </div>
-
-            <div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <div className="glass-card p-10 h-full flex flex-col min-h-[500px]">
-                  <h3 className="text-2xl font-black mb-10 dark:text-white uppercase tracking-tighter flex items-center gap-4">
+            <div className="lg:col-span-12">
+              <div className="glass-card p-10 flex flex-col items-center">
+                  <h3 className="text-2xl font-black mb-10 dark:text-white uppercase tracking-tighter flex items-center gap-4 self-start">
                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 shadow-sm border border-blue-500/5">
                         <ShieldCheck size={20} />
                     </div>
-                    Distribución del Esfuerzo
+                    Distribución del Esfuerzo Anual
                   </h3>
-                  <div className="flex-grow w-full">
-                    <ResponsiveContainer width="100%" height={320}>
-                      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F033" />
-                        <XAxis 
-                          dataKey="name" 
-                          stroke="#94A3B8" 
-                          fontSize={11} 
-                          axisLine={false} 
-                          tickLine={false}
-                          dy={10}
-                        />
-                        <YAxis hide />
-                        <Tooltip 
-                          cursor={{fill: isDark ? '#1e293b55' : '#f1f5f9'}} 
-                          contentStyle={{ 
-                            borderRadius: '24px', 
-                            border: 'none', 
-                            boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', 
-                            backgroundColor: isDark ? '#0f172a' : '#ffffff',
-                            fontWeight: '900',
-                            fontSize: '12px',
-                            color: isDark ? '#fff' : '#000'
-                          }}
-                        />
-                        <Bar dataKey="value" radius={[14, 14, 14, 14]} barSize={60}>
-                          {chartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="mt-10 flex flex-wrap gap-10 justify-center">
-                    {chartData.map((d) => (
-                        <div key={d.name} className="flex items-center gap-3">
-                          <div className="w-4 h-4 rounded-md shadow-sm border border-white/20" style={{backgroundColor: d.color}} />
-                          <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.1em]">{d.name}</span>
-                        </div>
-                    ))}
+                  <div className="w-full flex flex-col md:flex-row items-center gap-12">
+                    <div className="flex-grow w-full h-[320px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F033" />
+                          <XAxis 
+                            dataKey="name" 
+                            stroke="#94A3B8" 
+                            fontSize={11} 
+                            axisLine={false} 
+                            tickLine={false}
+                            dy={10}
+                          />
+                          <YAxis hide />
+                          <Tooltip 
+                            cursor={{fill: isDark ? '#1e293b55' : '#f1f5f9'}} 
+                            contentStyle={{ 
+                              borderRadius: '24px', 
+                              border: 'none', 
+                              boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', 
+                              backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                              fontWeight: '900',
+                              fontSize: '12px',
+                              color: isDark ? '#fff' : '#000'
+                            }}
+                          />
+                          <Bar dataKey="value" radius={[14, 14, 14, 14]} barSize={80}>
+                            {chartData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="shrink-0 flex flex-col gap-6 p-8 rounded-[2rem] bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/50 min-w-[280px]">
+                      {chartData.map((d) => (
+                          <div key={d.name} className="flex flex-col gap-1">
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full" style={{backgroundColor: d.color}} />
+                              <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.1em]">{d.name}</span>
+                            </div>
+                            <div className="text-2xl font-black dark:text-white pl-6">
+                              {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(d.value)}
+                            </div>
+                          </div>
+                      ))}
+                    </div>
                   </div>
               </div>
+            </div>
 
-              <div className="space-y-6">
+            <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                   <InputSection 
-                    title="Día a Día (Coste Vida)" 
+                    title="Coste Vida" 
                     icon={<Euro size={20}/>}
                     bg="bg-emerald-500/5"
                     iconColor="text-emerald-500"
                     defaultOpen={true}
                   >
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                      <div className="space-y-6">
                           <ZenInput 
                             label="Alquiler / Hipoteca" 
                             value={info.personalExpenses.rent} 
                             onChange={(v) => setInfo({...info, personalExpenses: {...info.personalExpenses, rent: v}})}
                           />
                           <ZenInput 
-                            label="Ahorro Mensual Neto" 
+                            label="Ahorro Mensual" 
                             value={info.personalExpenses.savings} 
                             onChange={(v) => setInfo({...info, personalExpenses: {...info.personalExpenses, savings: v}})}
                           />
                           <ZenInput 
-                            label="Gastos de Vida" 
+                            label="Alimentación y Gastos" 
                             value={info.personalExpenses.food + info.personalExpenses.utilities} 
                             onChange={(v) => setInfo({...info, personalExpenses: {...info.personalExpenses, food: v}})}
                           />
@@ -299,12 +306,12 @@ export default function App() {
                   </InputSection>
 
                   <InputSection 
-                    title="Estructura Negocio" 
+                    title="Estructura" 
                     icon={<Briefcase size={20}/>}
                     bg="bg-blue-500/5"
                     iconColor="text-blue-500"
                   >
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                      <div className="space-y-6">
                           <ZenInput 
                             label="Cuota Autónomos" 
                             value={info.businessExpenses.autonomoFee} 
@@ -321,7 +328,7 @@ export default function App() {
                             onChange={(v) => setInfo({...info, businessExpenses: {...info.businessExpenses, advisor: v}})}
                           />
                           <ZenInput 
-                            label="Otros Gastos Prof." 
+                            label="Otros Profesionales" 
                             value={info.businessExpenses.other} 
                             onChange={(v) => setInfo({...info, businessExpenses: {...info.businessExpenses, other: v}})}
                           />
@@ -329,40 +336,39 @@ export default function App() {
                   </InputSection>
 
                   <InputSection 
-                    title="Disponibilidad Real" 
+                    title="Disponibilidad" 
                     icon={<Clock size={20}/>}
                     bg="bg-amber-500/5"
                     iconColor="text-amber-500"
                   >
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                      <div className="space-y-6">
                           <ZenInput 
-                            label="Horas/Día Totales" 
+                            label="Horas por Día" 
                             value={info.workingTime.dailyHours} 
                             onChange={(v) => setInfo({...info, workingTime: {...info.workingTime, dailyHours: v}})}
                             step={1}
                           />
                           <ZenInput 
-                            label="Vaca (Semanas)" 
+                            label="Vacaciones (Semanas)" 
                             value={info.workingTime.vacationWeeks} 
                             onChange={(v) => setInfo({...info, workingTime: {...info.workingTime, vacationWeeks: v}})}
                             step={1}
                           />
-                          <div className="sm:col-span-2 space-y-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+                          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                             <div className="flex justify-between items-center px-1">
-                              <label className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Ratio de Producción (Facturable)</label>
-                              <span className="text-lg font-black text-amber-500">{(info.workingTime.billablePercent * 100).toFixed(0)}%</span>
+                              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Ratio Producción</label>
+                              <span className="text-sm font-black text-amber-500">{(info.workingTime.billablePercent * 100).toFixed(0)}%</span>
                             </div>
                             <input 
                               type="range" min="0" max="1" step="0.05"
                               value={info.workingTime.billablePercent}
                               onChange={(e) => setInfo({...info, workingTime: {...info.workingTime, billablePercent: parseFloat(e.target.value)}})}
-                              className="w-full h-4 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-amber-500 border-4 border-white dark:border-slate-900 shadow-inner"
+                              className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-amber-500"
                             />
-                            <p className="text-[10px] text-slate-400 font-bold px-1 text-center italic">Calcula el tiempo dedicado a clientes vs. administración propia.</p>
+                            <p className="text-[9px] text-slate-400 font-medium italic text-center leading-tight">Tiempo facturable vs. gestión propia.</p>
                           </div>
                       </div>
                   </InputSection>
-              </div>
             </div>
             
             <div className="lg:col-span-12">
