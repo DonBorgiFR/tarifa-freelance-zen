@@ -83,7 +83,6 @@ export function calculateFreelanceRates(info: FreelanceInfo): FreelanceResult {
 
   // 7. Advanced Metrics
   const breakEvenMonthly = requiredAnnualGross / 12;
-  const bottomUpRateMonthly = (bottomUpRate * annualBillableHours) / 12;
   const currentTotalMonthly = (suggestedRate * annualBillableHours) / 12;
   
   // El margen de seguridad debe medir cuánto superamos el mínimo vital (bottom-up)

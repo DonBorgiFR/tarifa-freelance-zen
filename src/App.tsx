@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { calculateFreelanceRates } from './lib/freelance-engine';
 import type { FreelanceInfo } from './lib/freelance-engine';
 import { 
@@ -96,7 +96,7 @@ export default function App() {
               <Calculator size={20} />
             </div>
             <a href="https://borjafelixrojas.odoo.com/" target="_blank" rel="noopener noreferrer" className="text-sm font-black tracking-[0.3em] hidden sm:block hover:text-blue-500 transition-colors">
-              BFR · ESTRATEGIA & GESTIí“N
+              BFR · ESTRATEGIA & GESTIÓN
             </a>
           </div>
           <div className="flex items-center gap-4">
@@ -266,7 +266,7 @@ export default function App() {
                           fill="#8884d8"
                           content={(props: any) => {
                              const { x, y, width, height, name, color, value } = props;
-                             if (width < 40 || height < 40) return null;
+                             if (width < 40 || height < 40) return <g />;
                              return (
                                <g>
                                  <rect x={x} y={y} width={width} height={height} style={{ fill: color, stroke: '#fff', strokeWidth: 2, fillOpacity: 0.8 }} />
