@@ -83,8 +83,12 @@ export function calculateFreelanceRates(info: FreelanceInfo): FreelanceResult {
 
   // 7. Advanced Metrics
   const breakEvenMonthly = requiredAnnualGross / 12;
+  const bottomUpRateMonthly = (bottomUpRate * annualBillableHours) / 12;
   const currentTotalMonthly = (suggestedRate * annualBillableHours) / 12;
-  const safetyMargin = ((currentTotalMonthly - breakEvenMonthly) / breakEvenMonthly) * 100;
+  
+  // El margen de seguridad debe medir cuánto superamos el mínimo vital (bottom-up)
+  // No debe elevarse "locamente" si subimos la aspiración, sino reflejar la salud real.
+  const safetyMargin = ((suggestedRate - bottomUpRate) / bottomUpRate) * 100;
   
   // Asumiendo que el ahorro personal es parte del "neto", 
   // el runway se calcula sobre ese ahorro acumulado proyectado vs gastos fijos.
@@ -97,11 +101,11 @@ export function calculateFreelanceRates(info: FreelanceInfo): FreelanceResult {
 
   // Chart Breakdown for more utility
   const chartBreakdown = [
-    { name: 'Coste de Vida', value: annualPersonalNet - (p.savings * 12), color: '#3b82f6' },
-    { name: 'Impuestos (IRPF)', value: requiredAnnualGross - annualPersonalNet - annualBusinessExpenses, color: '#f59e0b' },
-    { name: 'Gastos Negocio', value: annualBusinessExpenses, color: '#6366f1' },
-    { name: 'Ahorro / Reinversión', value: p.savings * 12, color: '#10b981' },
-    { name: 'Margen de Seguridad', value: Math.max(0, (suggestedRate * annualBillableHours) - requiredAnnualGross), color: '#8b5cf6' }
+    { name: 'Vida', value: annualPersonalNet - (p.savings * 12), color: '#3b82f6' },
+    { name: 'IRPF', value: requiredAnnualGross - annualPersonalNet - annualBusinessExpenses, color: '#f59e0b' },
+    { name: 'Negocio', value: annualBusinessExpenses, color: '#6366f1' },
+    { name: 'Ahorro', value: p.savings * 12, color: '#10b981' },
+    { name: 'Seguridad', value: Math.max(0, (suggestedRate * annualBillableHours) - requiredAnnualGross), color: '#8b5cf6' }
   ];
 
   return {

@@ -2,6 +2,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { calculateFreelanceRates } from './lib/freelance-engine';
 import type { FreelanceInfo } from './lib/freelance-engine';
 import { 
+  Plus,
+  Minus,
+  LayoutGrid,
   Euro, 
   Clock, 
   Briefcase, 
@@ -23,15 +26,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { 
   ResponsiveContainer, 
-  ComposedChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
   Tooltip, 
-  Cell,
-  PieChart,
-  Pie
+  Treemap
 } from 'recharts';
 import { ZenInput } from './components/ZenInput';
 import { exportToPDF } from './lib/PDFGenerator';
@@ -82,7 +78,6 @@ export default function App() {
     }
   }, [isDark]);
 
-  const chartData = useMemo(() => result.chartBreakdown, [result]);
 
   return (
     <div className="min-h-screen relative overflow-x-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30 transition-colors duration-500 font-sans pb-20">
@@ -166,8 +161,8 @@ export default function App() {
                     <div className="flex items-center gap-2">
                       <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] border border-blue-200 dark:border-blue-800">Salud Financiera</span>
                     </div>
-                    <h2 className="text-3xl font-black mt-6 leading-tight dark:text-white uppercase tracking-tighter">Margen de <br/><span className="text-7xl text-blue-600">Seguridad</span></h2>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-4 max-w-[320px] font-medium leading-relaxed">Capacidad de tu negocio para absorber caídas de ingresos sin comprometer tu vida.</p>
+                    <h2 className="text-xl sm:text-2xl font-black mt-6 leading-tight dark:text-white uppercase tracking-tighter italic">Seguridad <span className="text-blue-600 block text-4xl sm:text-5xl not-italic">Financiera</span></h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-4 max-w-[280px] font-medium leading-relaxed">Resistencia ante caídas de ingresos.</p>
                   </div>
                   <div className="mt-12 relative z-10">
                     <div className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tighter text-slate-800 dark:text-white flex items-baseline gap-2 leading-tight">
@@ -190,8 +185,8 @@ export default function App() {
                     <div className="flex items-center gap-2">
                       <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-200 dark:border-emerald-800">Punto de Equilibrio</span>
                     </div>
-                    <h2 className="text-3xl font-black mt-6 leading-tight dark:text-white uppercase tracking-tighter">Facturación <br/><span className="text-7xl text-emerald-600">Mínima</span></h2>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-4 max-w-[320px] font-medium leading-relaxed">Cifra bruta mensual necesaria para cubrir vida, negocio e impuestos.</p>
+                    <h2 className="text-xl sm:text-2xl font-black mt-6 leading-tight dark:text-white uppercase tracking-tighter italic">Suelo de <span className="text-emerald-600 block text-4xl sm:text-5xl not-italic">Ingresos</span></h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-4 max-w-[280px] font-medium leading-relaxed">Mínimo para cubrir vida y negocio.</p>
                   </div>
                   <div className="mt-12 relative z-10">
                     <div className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter text-slate-800 dark:text-white flex items-baseline gap-2 leading-tight">
@@ -206,94 +201,99 @@ export default function App() {
                   </div>
               </div>
 
-              <div className="glass-card p-10 bg-slate-900 text-white flex flex-col justify-between group overflow-hidden relative border-2 border-blue-500/20 shadow-2xl shadow-blue-500/10">
+              <div className="glass-card p-10 bg-slate-900 border-2 border-blue-500/30 flex flex-col justify-between group overflow-hidden relative shadow-2xl shadow-blue-500/10 h-full">
                   <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform duration-1000">
-                    <TrendingUp size={220} />
+                    <TrendingUp size={180} />
                   </div>
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] border border-blue-500/30">Tarifa Zen sugerida</span>
+                  <div className="relative z-10 space-y-8">
+                    <div className="flex items-center justify-between">
+                      <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest border border-blue-500/30">Ambición Zen</span>
+                      <div className="flex gap-2">
+                         <button 
+                           onClick={() => setInfo({...info, targetGross: (info.targetGross || 0) - 1000})}
+                           className="p-2 rounded-lg bg-slate-800 text-white hover:bg-red-500/20 transition-colors border border-slate-700"
+                           title="Restar 1.000€"
+                         >
+                           <Minus size={14} />
+                         </button>
+                         <button 
+                           onClick={() => setInfo({...info, targetGross: (info.targetGross || 0) + 1000})}
+                           className="p-2 rounded-lg bg-slate-800 text-white hover:bg-emerald-500/20 transition-colors border border-slate-700"
+                           title="Sumar 1.000€"
+                         >
+                           <Plus size={14} />
+                         </button>
+                      </div>
                     </div>
-                    <div className="mt-12 flex flex-col gap-3">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Cifra Bruta Anual Objetivo</label>
-                        <div className="relative">
+                    
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Bruto Anual Objetivo</label>
+                        <div className="flex items-baseline gap-2 group/input">
                           <input 
                             type="number"
                             value={info.targetGross}
                             onFocus={(e) => e.target.select()}
                             onChange={(e) => setInfo({...info, targetGross: parseFloat(e.target.value)})}
-                            className="bg-transparent text-5xl sm:text-6xl lg:text-7xl font-black outline-none border-b-2 border-slate-700 focus:border-blue-500 transition-all py-4 w-full pr-16 text-white tracking-tighter"
+                            className="bg-transparent text-5xl lg:text-6xl font-black outline-none border-b-2 border-slate-800 focus:border-blue-500 transition-all w-full text-white tracking-tighter"
                           />
-                          <span className="absolute right-0 bottom-6 text-2xl sm:text-3xl font-black text-slate-500 italic">€</span>
+                          <span className="text-3xl font-black text-blue-500">€</span>
                         </div>
                     </div>
                   </div>
-                  <div className="mt-12 text-right relative z-10">
-                    <div className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-blue-400 flex items-baseline justify-end gap-2 leading-none">
-                      {result.suggestedRate?.toFixed(2)}<span className="text-2xl text-slate-500 font-light tracking-normal italic ml-2">€/h</span>
+
+                  <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col items-end">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tarifa Sugerida</span>
+                    <div className="text-5xl lg:text-7xl font-black tracking-tighter text-white flex items-baseline gap-1 animate-pulse-slow">
+                      {result.suggestedRate?.toFixed(2)}<span className="text-xl text-blue-500 italic">€/h</span>
                     </div>
                   </div>
               </div>
             </div>
             <div className="lg:col-span-12">
               <div className="glass-card p-10 flex flex-col items-center">
-                  <h3 className="text-2xl font-black mb-10 dark:text-white uppercase tracking-tighter flex items-center gap-4 self-start">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 shadow-sm border border-blue-500/5">
-                        <ShieldCheck size={20} />
+                  <h3 className="text-xl font-black mb-8 dark:text-white uppercase tracking-widest flex items-center gap-4 self-start">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 border border-blue-500/10">
+                        <LayoutGrid size={20} />
                     </div>
-                    Distribución del Esfuerzo Anual
+                    Composición Jerárquica del Esfuerzo
                   </h3>
-                  <div className="w-full flex flex-col md:flex-row items-center gap-12">
-                    <div className="flex-grow w-full lg:w-3/5 h-[400px]">
+                  <div className="w-full h-[500px] rounded-[2rem] overflow-hidden border border-slate-200 dark:border-slate-800">
                       <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={[
-                          { name: 'Composición Anual', ...result.chartBreakdown.reduce((acc: any, curr) => ({ ...acc, [curr.name]: curr.value }), {}) }
-                        ]} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F033" />
-                          <XAxis dataKey="name" hide />
-                          <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}k€`} stroke="#94A3B8" fontSize={10} />
+                        <Treemap
+                          data={result.chartBreakdown}
+                          dataKey="value"
+                          stroke="#fff"
+                          fill="#8884d8"
+                          content={(props: any) => {
+                             const { x, y, width, height, name, color, value } = props;
+                             if (width < 40 || height < 40) return null;
+                             return (
+                               <g>
+                                 <rect x={x} y={y} width={width} height={height} style={{ fill: color, stroke: '#fff', strokeWidth: 2, fillOpacity: 0.8 }} />
+                                 <text x={x + width / 2} y={y + height / 2 - 10} textAnchor="middle" fill="#fff" fontSize={12} fontWeight="900" className="uppercase tracking-widest">
+                                   {name}
+                                 </text>
+                                 <text x={x + width / 2} y={y + height / 2 + 10} textAnchor="middle" fill="#fff" fontSize={10} fontWeight="500">
+                                   {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)}
+                                 </text>
+                               </g>
+                             );
+                          }}
+                        >
                           <Tooltip 
-                            contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '16px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
-                            itemStyle={{ fontSize: '12px', fontWeight: 'bold', color: '#fff' }}
+                            contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '16px', color: '#fff' }}
                             formatter={(value: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value)]}
                           />
-                          {result.chartBreakdown.map((entry) => (
-                             <Bar key={entry.name} dataKey={entry.name} stackId="a" fill={entry.color} radius={[4, 4, 0, 0]} />
-                          ))}
-                        </ComposedChart>
+                        </Treemap>
                       </ResponsiveContainer>
-                    </div>
-                    <div className="w-full lg:w-2/5 h-[400px] flex flex-col items-center justify-center">
-                        <ResponsiveContainer width="100%" height="80%">
-                            <PieChart>
-                                <Pie
-                                    data={result.chartBreakdown}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={70}
-                                    outerRadius={100}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {result.chartBreakdown.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip 
-                                     contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '16px', color: '#fff' }}
-                                     formatter={(value: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value)]}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
-                        <div className="grid grid-cols-2 gap-4 mt-4 w-full px-6">
-                            {result.chartBreakdown.map((entry) => (
-                                <div key={entry.name} className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-                                    <span className="text-[10px] font-black uppercase tracking-tight text-slate-500">{entry.name}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 mt-8 w-full">
+                      {result.chartBreakdown.map((entry) => (
+                          <div key={entry.name} className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                              <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
+                              <span className="text-[10px] font-black uppercase tracking-tight text-slate-500">{entry.name}</span>
+                          </div>
+                      ))}
                   </div>
               </div>
             </div>
