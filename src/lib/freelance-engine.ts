@@ -37,6 +37,17 @@ export interface FreelanceResult {
   bottomUpRate: number;
   topDownRate?: number;
   suggestedRate: number;
+  // Nuevas métricas
+  breakEvenMonthly: number;
+  safetyMargin: number; // Porcentaje de seguridad
+  runwayMonths: number; // Meses de vida con ahorros
+  monthlyTaxRetention: number;
+  profitMargin: number;
+  chartBreakdown: {
+    name: string;
+    value: number;
+    color: string;
+  }[];
 }
 
 export function calculateFreelanceRates(info: FreelanceInfo): FreelanceResult {
@@ -58,7 +69,6 @@ export function calculateFreelanceRates(info: FreelanceInfo): FreelanceResult {
   const annualBusinessExpenses = monthlyBusinessExpenses * 12;
 
   // 4. Bottom-Up Calculation (The "Minimum" for your life)
-  // Annual_Gross = (Annual_Personal_Net / (1 - IRPF)) + Annual_Business_Expenses
   const requiredAnnualGross = (annualPersonalNet / (1 - info.taxation.irpfRate)) + annualBusinessExpenses;
   const bottomUpRate = requiredAnnualGross / annualBillableHours;
 
@@ -69,7 +79,30 @@ export function calculateFreelanceRates(info: FreelanceInfo): FreelanceResult {
   }
 
   // 6. Final Suggested Rate
-  const suggestedRate = topDownRate ? (bottomUpRate + topDownRate) / 2 : bottomUpRate;
+  const suggestedRate = topDownRate ? (bottomUpRate * 0.4 + topDownRate * 0.6) : bottomUpRate;
+
+  // 7. Advanced Metrics
+  const breakEvenMonthly = requiredAnnualGross / 12;
+  const currentTotalMonthly = (suggestedRate * annualBillableHours) / 12;
+  const safetyMargin = ((currentTotalMonthly - breakEvenMonthly) / breakEvenMonthly) * 100;
+  
+  // Asumiendo que el ahorro personal es parte del "neto", 
+  // el runway se calcula sobre ese ahorro acumulado proyectado vs gastos fijos.
+  const monthlyFixedCosts = (annualBusinessExpenses / 12) + p.rent + p.utilities + p.food;
+  const annualProjectedSavings = p.savings * 12;
+  const runwayMonths = annualProjectedSavings / monthlyFixedCosts;
+  
+  const monthlyTaxRetention = (currentTotalMonthly * info.taxation.irpfRate);
+  const profitMargin = ((currentTotalMonthly - breakEvenMonthly) / currentTotalMonthly) * 100;
+
+  // Chart Breakdown for more utility
+  const chartBreakdown = [
+    { name: 'Coste de Vida', value: annualPersonalNet - (p.savings * 12), color: '#3b82f6' },
+    { name: 'Impuestos (IRPF)', value: requiredAnnualGross - annualPersonalNet - annualBusinessExpenses, color: '#f59e0b' },
+    { name: 'Gastos Negocio', value: annualBusinessExpenses, color: '#6366f1' },
+    { name: 'Ahorro / Reinversión', value: p.savings * 12, color: '#10b981' },
+    { name: 'Margen de Seguridad', value: Math.max(0, (suggestedRate * annualBillableHours) - requiredAnnualGross), color: '#8b5cf6' }
+  ];
 
   return {
     annualBillableHours,
@@ -80,6 +113,12 @@ export function calculateFreelanceRates(info: FreelanceInfo): FreelanceResult {
     requiredAnnualGross,
     bottomUpRate,
     topDownRate,
-    suggestedRate
+    suggestedRate,
+    breakEvenMonthly,
+    safetyMargin,
+    runwayMonths,
+    monthlyTaxRetention,
+    profitMargin,
+    chartBreakdown
   };
 }
