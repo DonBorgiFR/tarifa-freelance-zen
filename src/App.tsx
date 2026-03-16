@@ -409,7 +409,7 @@ export default function App() {
                   rel="noopener noreferrer"
                   className="px-6 py-2 rounded-full border border-blue-600/20 inline-block text-blue-600 font-black text-sm tracking-tighter hover:bg-blue-600/5 transition-colors"
                 >
-                  BORJAFELIXROJAS.COM
+                  BORJAFELIXROJAS.ODOO.COM
                 </a>
               </div>
             )}
