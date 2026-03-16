@@ -206,13 +206,13 @@ export default function App() {
                   </div>
               </div>
 
-              <div className="glass-card p-10 bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex flex-col justify-between group overflow-hidden relative border-slate-800">
+              <div className="glass-card p-10 bg-slate-900 text-white flex flex-col justify-between group overflow-hidden relative border-2 border-blue-500/20 shadow-2xl shadow-blue-500/10">
                   <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform duration-1000">
                     <TrendingUp size={220} />
                   </div>
                   <div className="relative z-10">
                     <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 rounded-full bg-slate-800 dark:bg-slate-100 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">Tarifa Zen Sugerida</span>
+                      <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] border border-blue-500/30">Tarifa Zen sugerida</span>
                     </div>
                     <div className="mt-12 flex flex-col gap-3">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Cifra Bruta Anual Objetivo</label>
@@ -222,14 +222,14 @@ export default function App() {
                             value={info.targetGross}
                             onFocus={(e) => e.target.select()}
                             onChange={(e) => setInfo({...info, targetGross: parseFloat(e.target.value)})}
-                            className="bg-transparent text-5xl sm:text-7xl font-black outline-none border-b-2 border-slate-700 dark:border-slate-300 focus:border-blue-500 transition-all py-4 w-full pr-16 text-white dark:text-slate-900 tracking-tighter"
+                            className="bg-transparent text-5xl sm:text-6xl lg:text-7xl font-black outline-none border-b-2 border-slate-700 focus:border-blue-500 transition-all py-4 w-full pr-16 text-white tracking-tighter"
                           />
-                          <span className="absolute right-0 bottom-6 text-2xl sm:text-3xl font-black text-slate-500 dark:text-slate-400 italic">€</span>
+                          <span className="absolute right-0 bottom-6 text-2xl sm:text-3xl font-black text-slate-500 italic">€</span>
                         </div>
                     </div>
                   </div>
                   <div className="mt-12 text-right relative z-10">
-                    <div className="text-6xl sm:text-7xl lg:text-9xl font-black tracking-tighter text-blue-500 flex items-baseline justify-end gap-2 leading-none">
+                    <div className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-blue-400 flex items-baseline justify-end gap-2 leading-none">
                       {result.suggestedRate?.toFixed(2)}<span className="text-2xl text-slate-500 font-light tracking-normal italic ml-2">€/h</span>
                     </div>
                   </div>
