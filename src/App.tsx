@@ -25,12 +25,13 @@ import {
   ResponsiveContainer, 
   ComposedChart, 
   Bar, 
-  Area,
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  Cell 
+  Cell,
+  PieChart,
+  Pie
 } from 'recharts';
 import { ZenInput } from './components/ZenInput';
 import { exportToPDF } from './lib/PDFGenerator';
@@ -100,7 +101,7 @@ export default function App() {
               <Calculator size={20} />
             </div>
             <a href="https://borjafelixrojas.odoo.com/" target="_blank" rel="noopener noreferrer" className="text-sm font-black tracking-[0.3em] hidden sm:block hover:text-blue-500 transition-colors">
-              BFR · ESTRATEGIA & GESTIÓN
+              BFR · ESTRATEGIA & GESTIí“N
             </a>
           </div>
           <div className="flex items-center gap-4">
@@ -123,7 +124,7 @@ export default function App() {
             <button 
               onClick={async () => {
                 setIsExporting(true);
-                await new Promise(r => setTimeout(r, 100));
+                await new Promise(r => setTimeout(r, 800)); // Relajamos el tiempo para renderizado
                 await exportToPDF('freelance-app-content', 'Informe-Tarifa-Freelance-BFR');
                 setIsExporting(false);
               }}
@@ -169,8 +170,8 @@ export default function App() {
                     <p className="text-slate-500 dark:text-slate-400 text-sm mt-4 max-w-[320px] font-medium leading-relaxed">Capacidad de tu negocio para absorber caídas de ingresos sin comprometer tu vida.</p>
                   </div>
                   <div className="mt-12 relative z-10">
-                    <div className="text-8xl font-black tracking-tighter text-slate-800 dark:text-white flex items-baseline gap-2">
-                      {result.safetyMargin.toFixed(0)}<span className="text-3xl text-blue-500 font-black italic ml-2">%</span>
+                    <div className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tighter text-slate-800 dark:text-white flex items-baseline gap-2 leading-tight">
+                      {result.safetyMargin.toFixed(0)}<span className="text-2xl text-blue-500 font-black italic ml-2">%</span>
                     </div>
                     <div className="mt-8 flex items-center gap-3 text-blue-600 dark:text-blue-400 font-black text-xs uppercase tracking-[0.15em]">
                       <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/40">
@@ -193,7 +194,7 @@ export default function App() {
                     <p className="text-slate-500 dark:text-slate-400 text-sm mt-4 max-w-[320px] font-medium leading-relaxed">Cifra bruta mensual necesaria para cubrir vida, negocio e impuestos.</p>
                   </div>
                   <div className="mt-12 relative z-10">
-                    <div className="text-7xl font-black tracking-tighter text-slate-800 dark:text-white flex items-baseline gap-2">
+                    <div className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter text-slate-800 dark:text-white flex items-baseline gap-2 leading-tight">
                       {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(result.breakEvenMonthly)}
                     </div>
                     <div className="mt-8 flex items-center gap-3 text-emerald-600 dark:text-emerald-400 font-black text-xs uppercase tracking-[0.15em]">
@@ -221,15 +222,15 @@ export default function App() {
                             value={info.targetGross}
                             onFocus={(e) => e.target.select()}
                             onChange={(e) => setInfo({...info, targetGross: parseFloat(e.target.value)})}
-                            className="bg-transparent text-7xl font-black outline-none border-b-2 border-slate-800 dark:border-slate-200 focus:border-blue-500 transition-all py-4 w-full pr-16 text-white dark:text-slate-900 tracking-tighter"
+                            className="bg-transparent text-5xl sm:text-7xl font-black outline-none border-b-2 border-slate-700 dark:border-slate-300 focus:border-blue-500 transition-all py-4 w-full pr-16 text-white dark:text-slate-900 tracking-tighter"
                           />
-                          <span className="absolute right-0 bottom-6 text-3xl font-black text-slate-600 dark:text-slate-300 italic">€</span>
+                          <span className="absolute right-0 bottom-6 text-2xl sm:text-3xl font-black text-slate-500 dark:text-slate-400 italic">€</span>
                         </div>
                     </div>
                   </div>
                   <div className="mt-12 text-right relative z-10">
-                    <div className="text-9xl font-black tracking-tighter text-blue-500 flex items-baseline justify-end gap-2 leading-none">
-                      {result.suggestedRate?.toFixed(2)}<span className="text-3xl text-slate-500 font-light tracking-normal italic ml-2">€/h</span>
+                    <div className="text-6xl sm:text-7xl lg:text-9xl font-black tracking-tighter text-blue-500 flex items-baseline justify-end gap-2 leading-none">
+                      {result.suggestedRate?.toFixed(2)}<span className="text-2xl text-slate-500 font-light tracking-normal italic ml-2">€/h</span>
                     </div>
                   </div>
               </div>
@@ -243,54 +244,55 @@ export default function App() {
                     Distribución del Esfuerzo Anual
                   </h3>
                   <div className="w-full flex flex-col md:flex-row items-center gap-12">
-                    <div className="flex-grow w-full h-[400px]">
+                    <div className="flex-grow w-full lg:w-3/5 h-[400px]">
                       <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                        <ComposedChart data={[
+                          { name: 'Composición Anual', ...result.chartBreakdown.reduce((acc: any, curr) => ({ ...acc, [curr.name]: curr.value }), {}) }
+                        ]} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F033" />
-                          <XAxis 
-                            dataKey="name" 
-                            stroke="#94A3B8" 
-                            fontSize={10} 
-                            axisLine={false} 
-                            tickLine={false}
-                            dy={10}
-                            interval={0}
-                          />
-                          <YAxis hide />
+                          <XAxis dataKey="name" hide />
+                          <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}k€`} stroke="#94A3B8" fontSize={10} />
                           <Tooltip 
-                            cursor={{fill: isDark ? '#1e293b55' : '#f1f5f9'}} 
-                            contentStyle={{ 
-                              borderRadius: '24px', 
-                              border: 'none', 
-                              boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', 
-                              backgroundColor: isDark ? '#0f172a' : '#ffffff',
-                              fontWeight: '900',
-                              fontSize: '12px',
-                              color: isDark ? '#fff' : '#000'
-                            }}
-                            formatter={(value: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value), '']}
+                            contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '16px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
+                            itemStyle={{ fontSize: '12px', fontWeight: 'bold', color: '#fff' }}
+                            formatter={(value: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value)]}
                           />
-                          <Bar dataKey="value" radius={[20, 20, 20, 20]} barSize={60}>
-                            {chartData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Bar>
-                          <Area type="monotone" dataKey="value" fill="#3b82f611" stroke="#3b82f633" strokeWidth={2} />
+                          {result.chartBreakdown.map((entry) => (
+                             <Bar key={entry.name} dataKey={entry.name} stackId="a" fill={entry.color} radius={[4, 4, 0, 0]} />
+                          ))}
                         </ComposedChart>
                       </ResponsiveContainer>
                     </div>
-                    <div className="shrink-0 flex flex-col gap-6 p-8 rounded-[2rem] bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/50 min-w-[280px]">
-                      {chartData.map((d) => (
-                          <div key={d.name} className="flex flex-col gap-1">
-                            <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 rounded-full" style={{backgroundColor: d.color}} />
-                              <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.1em]">{d.name}</span>
-                            </div>
-                            <div className="text-2xl font-black dark:text-white pl-6">
-                              {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(d.value)}
-                            </div>
-                          </div>
-                      ))}
+                    <div className="w-full lg:w-2/5 h-[400px] flex flex-col items-center justify-center">
+                        <ResponsiveContainer width="100%" height="80%">
+                            <PieChart>
+                                <Pie
+                                    data={result.chartBreakdown}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={70}
+                                    outerRadius={100}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {result.chartBreakdown.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                    ))}
+                                </Pie>
+                                <Tooltip 
+                                     contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '16px', color: '#fff' }}
+                                     formatter={(value: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value)]}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className="grid grid-cols-2 gap-4 mt-4 w-full px-6">
+                            {result.chartBreakdown.map((entry) => (
+                                <div key={entry.name} className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+                                    <span className="text-[10px] font-black uppercase tracking-tight text-slate-500">{entry.name}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                   </div>
               </div>
@@ -414,7 +416,7 @@ export default function App() {
               </div>
             )}
             <p className="text-slate-300 dark:text-slate-700 text-[10px] tracking-[0.6em] font-black uppercase">
-              ESTRATEGIA · TECNOLOGÍA · DATOS · 2026
+              ESTRATEGIA · TECNOLOGíA · DATOS · 2026
             </p>
           </footer>
         </div>
