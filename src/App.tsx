@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+﻿import { useState, useMemo, useEffect } from 'react';
 import { calculateFreelanceRates } from './lib/freelance-engine';
 import type { FreelanceInfo } from './lib/freelance-engine';
 import { 

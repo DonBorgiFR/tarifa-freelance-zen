@@ -11,23 +11,21 @@ export const exportToPDF = async (elementId: string, filename: string) => {
   try {
     console.log('Generating PDF for:', elementId);
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
-      logging: true,
+      logging: false,
       allowTaint: true,
       backgroundColor: document.documentElement.classList.contains('dark') ? '#020617' : '#ffffff',
       windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight
     });
 
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-      unit: 'px',
-      format: [canvas.width, canvas.height]
-    });
-
-    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    const imgData = canvas.toDataURL('image/png', 0.8);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
     pdf.save(`${filename}.pdf`);
     console.log('PDF generated successfully');
   } catch (error) {
