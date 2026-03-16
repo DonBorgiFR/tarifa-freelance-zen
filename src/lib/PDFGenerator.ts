@@ -1,4 +1,4 @@
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 export const exportToPDF = async (elementId: string, filename: string) => {
@@ -10,7 +10,7 @@ export const exportToPDF = async (elementId: string, filename: string) => {
 
   try {
     console.log('Generating PDF for:', elementId);
-    const canvas = await html2canvas(element, {
+    const canvas = await (html2canvas as any)(element, {
       scale: 1.5,
       useCORS: true,
       logging: false,
