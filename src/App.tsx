@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { calculateFreelanceRates } from './lib/freelance-engine';
-import type { FreelanceInfo } from './lib/freelance-engine';
+import type { FreelanceInfo, FreelanceResult } from './lib/freelance-engine';
 import { 
   Plus,
   Minus,
@@ -227,14 +227,17 @@ export default function App() {
                     </div>
                     
                     <div className="flex flex-col gap-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Bruto Anual Objetivo</label>
+                        <label htmlFor="targetGross" className="text-[10px] font-bold text-slate-500 uppercase tracking-widest cursor-pointer">Bruto Anual Objetivo</label>
                         <div className="flex items-baseline gap-2 group/input">
                           <input 
+                            id="targetGross"
                             type="number"
                             value={info.targetGross}
                             onFocus={(e) => e.target.select()}
                             onChange={(e) => setInfo({...info, targetGross: parseFloat(e.target.value)})}
                             className="bg-transparent text-5xl lg:text-6xl font-black outline-none border-b-2 border-slate-800 focus:border-blue-500 transition-all w-full text-white tracking-tighter"
+                            title="Bruto Anual Objetivo"
+                            placeholder="0"
                           />
                           <span className="text-3xl font-black text-blue-500">€</span>
                         </div>
@@ -264,25 +267,11 @@ export default function App() {
                           dataKey="value"
                           stroke="#fff"
                           fill="#8884d8"
-                          content={(props: any) => {
-                             const { x, y, width, height, name, color, value } = props;
-                             if (width < 40 || height < 40) return <g />;
-                             return (
-                               <g>
-                                 <rect x={x} y={y} width={width} height={height} style={{ fill: color, stroke: '#fff', strokeWidth: 2, fillOpacity: 0.8 }} />
-                                 <text x={x + width / 2} y={y + height / 2 - 10} textAnchor="middle" fill="#fff" fontSize={12} fontWeight="900" className="uppercase tracking-widest">
-                                   {name}
-                                 </text>
-                                 <text x={x + width / 2} y={y + height / 2 + 10} textAnchor="middle" fill="#fff" fontSize={10} fontWeight="500">
-                                   {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)}
-                                 </text>
-                               </g>
-                             );
-                          }}
+                          content={<CustomizedContent />}
                         >
                           <Tooltip 
                             contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '16px', color: '#fff' }}
-                            formatter={(value: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value)]}
+                            formatter={(value) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(value))]}
                           />
                         </Treemap>
                       </ResponsiveContainer>
@@ -381,14 +370,16 @@ export default function App() {
                           />
                           <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                             <div className="flex justify-between items-center px-1">
-                              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Ratio Producción</label>
+                              <label htmlFor="billablePercent" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 cursor-pointer">Ratio Producción</label>
                               <span className="text-sm font-black text-amber-500">{(info.workingTime.billablePercent * 100).toFixed(0)}%</span>
                             </div>
                             <input 
+                              id="billablePercent"
                               type="range" min="0" max="1" step="0.05"
                               value={info.workingTime.billablePercent}
                               onChange={(e) => setInfo({...info, workingTime: {...info.workingTime, billablePercent: parseFloat(e.target.value)}})}
                               className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-amber-500"
+                              title="Ratio de Producción (Tiempo Facturable)"
                             />
                             <p className="text-[9px] text-slate-400 font-medium italic text-center leading-tight">Tiempo facturable vs. gestión propia.</p>
                           </div>
@@ -449,7 +440,32 @@ export default function App() {
   );
 }
 
-function InputSection({ title, children, icon, bg, iconColor, defaultOpen = false }: any) {
+const CustomizedContent = (props: any) => {
+  const { x, y, width, height, name, color, value } = props;
+  if (width < 40 || height < 40) return <g />;
+  return (
+    <g>
+      <rect x={x} y={y} width={width} height={height} style={{ fill: color, stroke: '#fff', strokeWidth: 2, fillOpacity: 0.8 }} />
+      <text x={x + width / 2} y={y + height / 2 - 10} textAnchor="middle" fill="#fff" fontSize={12} fontWeight="900" className="uppercase tracking-widest">
+        {name}
+      </text>
+      <text x={x + width / 2} y={y + height / 2 + 10} textAnchor="middle" fill="#fff" fontSize={10} fontWeight="500">
+        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value ?? 0)}
+      </text>
+    </g>
+  );
+};
+
+interface InputSectionProps {
+  title: string;
+  children: React.ReactNode;
+  icon: React.ReactNode;
+  bg: string;
+  iconColor: string;
+  defaultOpen?: boolean;
+}
+
+function InputSection({ title, children, icon, bg, iconColor, defaultOpen = false }: InputSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
@@ -479,7 +495,7 @@ function InputSection({ title, children, icon, bg, iconColor, defaultOpen = fals
   );
 }
 
-function InsightPanel({ result, info }: { result: any, info: FreelanceInfo }) {
+function InsightPanel({ result, info }: { result: FreelanceResult, info: FreelanceInfo }) {
   const hourly = result.bottomUpRate;
   const lifestyleCost = 50 / hourly; 
   
